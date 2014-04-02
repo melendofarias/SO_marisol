@@ -1,0 +1,77 @@
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/svn-no-anon/lcc/!svn/ver/508/T-313/Alumnos/mfarias/nachos/trunk/nachos-code/filesys
+END
+filehdr.cc
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svn-no-anon/lcc/!svn/ver/508/T-313/Alumnos/mfarias/nachos/trunk/nachos-code/filesys/filehdr.cc
+END
+filesys.cc
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svn-no-anon/lcc/!svn/ver/508/T-313/Alumnos/mfarias/nachos/trunk/nachos-code/filesys/filesys.cc
+END
+filehdr.h
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/svn-no-anon/lcc/!svn/ver/508/T-313/Alumnos/mfarias/nachos/trunk/nachos-code/filesys/filehdr.h
+END
+synchdisk.cc
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/svn-no-anon/lcc/!svn/ver/508/T-313/Alumnos/mfarias/nachos/trunk/nachos-code/filesys/synchdisk.cc
+END
+filesys.h
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/svn-no-anon/lcc/!svn/ver/508/T-313/Alumnos/mfarias/nachos/trunk/nachos-code/filesys/filesys.h
+END
+openfile.cc
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svn-no-anon/lcc/!svn/ver/508/T-313/Alumnos/mfarias/nachos/trunk/nachos-code/filesys/openfile.cc
+END
+synchdisk.h
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svn-no-anon/lcc/!svn/ver/508/T-313/Alumnos/mfarias/nachos/trunk/nachos-code/filesys/synchdisk.h
+END
+openfile.h
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svn-no-anon/lcc/!svn/ver/508/T-313/Alumnos/mfarias/nachos/trunk/nachos-code/filesys/openfile.h
+END
+directory.cc
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/svn-no-anon/lcc/!svn/ver/508/T-313/Alumnos/mfarias/nachos/trunk/nachos-code/filesys/directory.cc
+END
+directory.h
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svn-no-anon/lcc/!svn/ver/508/T-313/Alumnos/mfarias/nachos/trunk/nachos-code/filesys/directory.h
+END
+fstest.cc
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/svn-no-anon/lcc/!svn/ver/508/T-313/Alumnos/mfarias/nachos/trunk/nachos-code/filesys/fstest.cc
+END
+Makefile
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svn-no-anon/lcc/!svn/ver/508/T-313/Alumnos/mfarias/nachos/trunk/nachos-code/filesys/Makefile
+END

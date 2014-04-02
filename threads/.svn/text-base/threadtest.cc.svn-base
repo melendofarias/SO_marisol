@@ -1,0 +1,240 @@
+// threadtest.cc 
+//	Simple test case for the threads assignment.
+//
+//	Create several threads, and have them context switch
+//	back and forth between themselves by calling Thread::Yield, 
+//	to illustrate the inner workings of the thread system.
+//
+// Copyright (c) 1992-1993 The Regents of the University of California.
+// All rights reserved.  See copyright.h for copyright notice and limitation 
+// of liability and disclaimer of warranty provisions.
+//
+// Parts from Copyright (c) 2007-2009 Universidad de Las Palmas de Gran Canaria
+//
+
+#include "copyright.h"
+#include "system.h"
+#include "synch.h"
+#include "thread.h"
+#include "puerto.h"
+
+//----------------------------------------------------------------------
+// SimpleThread
+// 	Loop 10 times, yielding the CPU to another ready thread 
+//	each iteration.
+//
+//	"name" points to a string with a thread name, just for
+//      debugging purposes.
+//----------------------------------------------------------------------
+/*
+void
+SimpleThread(void* name)
+{
+    // Reinterpret arg "name" as a string
+    char* threadName = (char*)name;
+    
+    // If the lines dealing with interrupts are commented,
+    // the code will behave incorrectly, because
+    // printf execution may cause race conditions.
+    for (int num = 0; num < 10; num++) {
+        IntStatus oldLevel = interrupt->SetLevel(IntOff);
+	printf("*** thread %s looped %d times\n", threadName, num);
+	interrupt->SetLevel(oldLevel);
+        currentThread->Yield();
+    }
+    IntStatus oldLevel = interrupt->SetLevel(IntOff);
+    printf(">>> Thread %s has finished\n", threadName);
+    interrupt->SetLevel(oldLevel);
+}
+
+//----------------------------------------------------------------------
+// ThreadTest
+// 	Set up a ping-pong between several threads, by launching
+//	ten threads which call SimpleThread, and finally calling 
+//	SimpleThread ourselves.
+//----------------------------------------------------------------------
+
+void
+ThreadTest()
+{
+    DEBUG('t', "Entering SimpleTest");
+
+    for ( int k=1; k<=5; k++) {
+      char* threadname = new char[100];
+      sprintf(threadname, "Hilo %d", k);
+      	Thread* newThread = new Thread (threadname);
+      	newThread->Fork (SimpleThread, (void*)threadname);
+    }
+    
+    SimpleThread( (void*)"Hilo 0");
+}
+
+*/
+
+////Probando sync.h y sync.cc /////	
+	
+int total=0;
+char* threadname2 = new char[100];
+	Lock* c= new Lock("cerrojo");
+	Semaphore *s= new Semaphore("S", 3);
+	Condition* cond=new Condition("condicion", c);
+
+void sumo(void *name){
+
+	c->Acquire();
+
+	total= total+1;
+
+	while(total<3) cond->Wait();
+	if(!(c->isHeldByCurrentThread())) 	// recupero el lock si el thread se fue a dormir
+		 c->Acquire();
+	
+	currentThread->Yield(); 	//trata de cambiar a otro thread suma pero no puede por el lock
+		cond->Broadcast();	  //pongo en ready a todos los theads esperando
+		printf("S total %d\n", total);
+	c->Release();
+	
+}
+
+void multiplico(void* name){
+	c->Acquire();
+	total=total +total;
+	printf("M total %d\n", total);
+	currentThread->Yield(); 	//
+	c->Release();
+}
+
+
+
+void SynTest()	
+{
+	//currentThread->calljoin=true;
+
+	for ( int k=1; k<=5; k++) {
+      char* threadname = new char[100];
+      sprintf(threadname, "Hilo %d S", k);
+	 char* threadnamew = new char[100];
+      sprintf(threadnamew, "Hilo %d M", k);
+      	Thread* newThread = new Thread (threadname);
+	      	Thread* newThreadw = new Thread (threadnamew);
+
+      	newThread->Fork (sumo, (void*)threadname);
+	
+//	if(currentThread->calljoin)
+//		currentThread->Join(newThread);
+//	DEBUG('t', "PASO EL JOIN");
+	newThreadw->Fork (multiplico, (void*)threadnamew);
+
+    }
+	sumo((void*)"sumo");
+	printf("total %d", total);
+	//currentThread->Yield();
+	
+}
+
+
+/// fin de la prueba de sync ////
+
+
+
+//***********************
+///probando puertos ////
+
+Lock *cerrojo=new Lock("cerrojo");
+Condition *condSend= new Condition("condicionSend", cerrojo);
+Condition *condReceive= new Condition("condicionReceive", cerrojo);
+
+Puerto *port= new Puerto("puerto", cerrojo, condSend, condReceive);	
+
+	int i=5;
+
+void Sender(void *tname)
+{
+	DEBUG('t', "ENTRO A sender");
+
+
+	port->Send(i++);
+}
+
+
+void Receiver(void *tname)
+{
+	int m;
+	port->Receive(m);
+}
+
+
+
+void PortTest()	
+{
+
+	for ( int k=1; k<=2; k++) {
+      char* threadname = new char[100];
+      sprintf(threadname, "Hilo %d S", k);
+	 char* threadnamew = new char[100];
+      sprintf(threadnamew, "Hilo %d R", k);
+      	Thread* newThread = new Thread (threadname);
+	      	Thread* newThreadw = new Thread (threadnamew);
+
+      	newThread->Fork (Sender, (void *)threadname);
+	
+	newThreadw->Fork (Receiver,(void *) threadnamew);
+
+    }
+	
+	Sender((void*)"send");
+
+	//currentThread->Yield();
+	
+}
+
+
+/*
+
+int i=0;
+	int *mensaje;
+	Lock *cerrojo = new Lock("cerrojo");
+	Condition *condSend= new Condition("condicionSend", cerrojo);
+	Condition *condReceive= new Condition("condicionReceive", cerrojo);
+
+
+
+void Send(void * tname)
+{
+	cerrojo->Acquire();
+	int m=5;
+	mensaje[i]=m;
+	i++;
+	
+	condReceive->Signal();			//despierto a algun receptor,si lo hay
+	condSend->Wait();  			//espero a que el receptor confirme
+						//la recepcion del mensaje m
+	if(!(cerrojo->isHeldByCurrentThread()))
+		cerrojo->Acquire();
+
+	cerrojo->Release();
+}
+
+void Receive(void* tname)
+{				//m guardará todos los mensajes
+	cerrojo->Acquire();				//recibidos por los distintos
+							//receptores, es global	
+	condSend->Broadcast();
+	
+	while (mensaje==NULL) 				//si no hay nada que leer
+		condReceive->Wait();			//esperar por senders
+
+	if(!(cerrojo->isHeldByCurrentThread()))		
+		cerrojo->Acquire();
+	
+	DEBUG('t', "Los mensajes fueron recibidos\n");	//confirmo la recepcion
+	mensaje=NULL;					//de los mensajes
+	i=0;
+	
+	
+	cerrojo->Release();
+}	
+	
+
+
+*/
